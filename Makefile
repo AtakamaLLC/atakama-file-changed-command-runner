@@ -7,16 +7,11 @@ requirements:
 	pip install -r requirements.txt
 
 lint:
-	python -m pylint atakama
-	black atakama
+	python -m pylint runcmd_on_file_changed
+	black runcmd_on_file_changed
 
 test:
-	PYTHONPATH=. pytest --cov atakama --cov-fail-under=100 -v tests
-
-publish:
-	rm -rf dist
-	python3 setup.py bdist_wheel
-	twine upload dist/*
+	PYTHONPATH=. pytest --cov runcmd_on_file_changed --cov-fail-under=100 -v tests
 
 install-hooks:
 	pre-commit install
