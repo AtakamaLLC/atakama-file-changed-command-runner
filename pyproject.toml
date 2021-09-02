@@ -1,0 +1,21 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "change_notify"
+authors = [
+    {name="Atakama, LLC", email="dev-support@atakama.com"},
+]
+readme="README.md"
+classifiers = [
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "atakama",
+]
+requires-python = ">=3.6"
+dynamic = [ "version", "description" ]
