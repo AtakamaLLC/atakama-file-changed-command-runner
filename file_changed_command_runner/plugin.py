@@ -29,7 +29,7 @@ class FileChangedCommandRunner(FileChangedPlugin):
         with self._callback_server as cb:
             cmd = f"{shlex.quote(self._cmd)} {shlex.quote(full_path)} {shlex.quote(cb.url)}"
             log.debug("about to run command: %s", cmd)
-            with subprocess.Popen(cmd, shell=True) as proc:
+            with subprocess.Popen(cmd) as proc:
                 log.debug("waiting for callback...")
                 cb.wait(self._timeout)
                 log.debug(

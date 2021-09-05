@@ -21,25 +21,12 @@ class CallbackHandler(BaseHTTPRequestHandler):
 class CallbackServer(HTTPServer):
     """Listens on localhost for a request with a specific token"""
 
-    port_range = range(50000, 51000)
-
     def __init__(self):
         self.allow_reuse_address: bool = False
         self._token: str = ""
         self._event: threading.Event = threading.Event()
-
-        for port in self.port_range:
-            try:
-                super().__init__(("localhost", port), CallbackHandler)
-                log.info("Listening on localhost:%s", self.server_port)
-                break
-            except OSError:
-                # occurs when a given port is unavailable
-                pass
-
-        if not hasattr(self, "server_port"):
-            raise RuntimeError("Failed to bind to a localhost port")
-
+        super().__init__(("127.0.0.1", 0), CallbackHandler)
+        log.info("Listening on 127.0.0.1:%s", self.server_port)
         threading.Thread(target=self.serve_forever, daemon=True).start()
 
     def __enter__(self) -> "CallbackServer":
@@ -58,7 +45,7 @@ class CallbackServer(HTTPServer):
     @property
     def url(self) -> str:
         assert self._token
-        return f"http://localhost:{self.server_port}/{self._token}"
+        return f"http://127.0.0.1:{self.server_port}/{self._token}"
 
     def wait(self, timeout: float = None):
         assert self._token

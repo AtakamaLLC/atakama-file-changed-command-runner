@@ -26,7 +26,6 @@ def test_file_changed():
             popen_init_called = True
             expected_cmd = f"{plugin_args['cmd']} {changed_path} {fccr._callback_server.url}"
             assert args[1] == expected_cmd
-            assert kwargs["shell"]
 
         def __enter__(self):
             return self
