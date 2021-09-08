@@ -1,6 +1,6 @@
-import threading
 import pytest
 import requests
+from threading import Thread, Event
 from urllib.parse import urlparse
 
 from file_changed_command_runner.callback_server import CallbackServer
@@ -31,8 +31,8 @@ def test_wait_timeout():
 
 def test_process_callback():
     timeout = 3
-    listening = threading.Event()
-    done = threading.Event()
+    listening = Event()
+    done = Event()
 
     with CallbackServer() as cb:
 
@@ -42,7 +42,7 @@ def test_process_callback():
             done.set()
 
         # server is waiting in another thread
-        threading.Thread(target=waiter, daemon=True).start()
+        Thread(target=waiter, daemon=True).start()
         listening.wait(timeout)
         assert listening.is_set()
         assert cb.url
@@ -63,18 +63,10 @@ def test_process_callback():
         assert cb.got_callback
 
 
-def test_handler():
+def _do_callback_requests(cb: CallbackServer, listening: Event, done: Event, process: Event):
     timeout = 5
-    listening = threading.Event()
-    done = threading.Event()
-    process = threading.Event()
 
-    class TestCallbackServer(CallbackServer):
-        def process_callback(self, token: str):
-            process.set()
-            super().process_callback(token)
-
-    with TestCallbackServer() as cb:
+    with cb:
 
         def waiter():
             listening.set()
@@ -82,7 +74,7 @@ def test_handler():
             done.set()
 
         # server is waiting in another thread
-        threading.Thread(target=waiter, daemon=True).start()
+        Thread(target=waiter, daemon=True).start()
         listening.wait(timeout)
         assert listening.is_set()
         assert cb.url
@@ -101,3 +93,24 @@ def test_handler():
         done.wait(timeout)
         assert done.is_set()
         assert cb.got_callback
+
+
+def test_handler():
+    listening = Event()
+    done = Event()
+    process = Event()
+
+    class TestCallbackServer(CallbackServer):
+        def process_callback(self, token: str):
+            process.set()
+            super().process_callback(token)
+
+    cb = TestCallbackServer()
+
+    _do_callback_requests(cb, listening, done, process)
+
+    # ensure a CallbackServer instance can be reused
+    listening.clear()
+    done.clear()
+    process.clear()
+    _do_callback_requests(cb, listening, done, process)

@@ -24,7 +24,8 @@ def test_file_changed():
         def __init__(*args, **kwargs):
             nonlocal popen_init_called
             popen_init_called = True
-            expected_cmd = f"{plugin_args['cmd']} {changed_path} {fccr._callback_server.url}"
+            cmd = plugin_args["cmd"]
+            expected_cmd = f'"{cmd}" "{changed_path}" "{fccr._callback_server.url}"'
             assert args[1] == expected_cmd
 
         def __enter__(self):

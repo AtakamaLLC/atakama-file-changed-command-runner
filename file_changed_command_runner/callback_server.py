@@ -26,16 +26,17 @@ class CallbackServer(HTTPServer):
         self._token: str = ""
         self._event: threading.Event = threading.Event()
         super().__init__(("127.0.0.1", 0), CallbackHandler)
-        log.info("Listening on 127.0.0.1:%s", self.server_port)
-        threading.Thread(target=self.serve_forever, daemon=True).start()
+        log.info("Listening on %s:%s", self.server_address[0], self.server_port)
 
     def __enter__(self) -> "CallbackServer":
         self._event.clear()
         self._token = os.urandom(16).hex()
+        threading.Thread(target=self.serve_forever, daemon=True).start()
         return self
 
     def __exit__(self, *args):
         self._token = ""
+        self.shutdown()
 
     @property
     def got_callback(self) -> bool:
@@ -45,7 +46,7 @@ class CallbackServer(HTTPServer):
     @property
     def url(self) -> str:
         assert self._token
-        return f"http://127.0.0.1:{self.server_port}/{self._token}"
+        return f"http://{self.server_address[0]}:{self.server_port}/{self._token}"
 
     def wait(self, timeout: float = None):
         assert self._token
