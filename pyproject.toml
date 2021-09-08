@@ -3,7 +3,7 @@ requires = ["flit_core >=3.2,<4"]
 build-backend = "flit_core.buildapi"
 
 [project]
-name = "change_notify"
+name = "file_changed_command_runner"
 authors = [
     {name="Atakama, LLC", email="dev-support@atakama.com"},
 ]

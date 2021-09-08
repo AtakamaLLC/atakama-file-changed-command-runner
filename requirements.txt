@@ -6,6 +6,7 @@ pytest-cov
 pylint
 black
 pre-commit
+requests
 
 # package
 atakama

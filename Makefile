@@ -7,11 +7,11 @@ requirements:
 	pip install -r requirements.txt
 
 lint:
-	python -m pylint runcmd_on_file_changed
-	black runcmd_on_file_changed
+	python -m pylint file_changed_command_runner
+	black file_changed_command_runner
 
 test:
-	PYTHONPATH=. pytest --cov runcmd_on_file_changed --cov-fail-under=100 -v tests
+	PYTHONPATH=. pytest --cov file_changed_command_runner --cov-fail-under=100 -v tests
 
 install-hooks:
 	pre-commit install
@@ -19,6 +19,6 @@ install-hooks:
 apkg:
 	rm -rf dist
 	flit build
-	atakama-pkg.exe --pkg dist/change_notify-1.0.0-py3-none-any.whl --key ../openssl/key.pem --crt ../openssl/cert.pem --self-signed
+	atakama-pkg --pkg dist/file_changed_command_runner-1.0.0-py3-none-any.whl --key ../keys/key.pem --crt ../keys/cert.pem --self-signed
 
 .PHONY: test requirements lint publish install-hooks
